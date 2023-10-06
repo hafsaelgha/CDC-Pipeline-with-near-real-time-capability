@@ -35,7 +35,7 @@ In this project, I used a simple dataset that contain Informations about users s
 - [ ] Python3 of course !
 - [ ] boto3 : to interacte with AWS services
 - [ ] mysql-connector-python + mysql client core 8.0 : to establish connexion between our Database and EC2 instance.
-- [ ] amazon-kineis-client : amazon_kclpy in order to execute our reading from kinesis on EC2 instance.
+- [ ] amazon-kinesis-client : amazon_kclpy in order to execute our reading from kinesis on EC2 instance.
 - [ ] Files loaded on EC2 instance : load file to ec2: users.csv, commands.sql, read_kinesis_first_10_records.py, aurora_update_single_row.py, aurora_update_multiple_row.py, read_kinesis_update.py
 ![EC2 required installation](https://github.com/hafsaelgha/CDC-Pipeline-with-near-real-time-capability/assets/99973359/65a1e805-af28-44c3-99bd-7e986c5fc49e)
 ![EC2 required installation 2 ](https://github.com/hafsaelgha/CDC-Pipeline-with-near-real-time-capability/assets/99973359/0203a3b8-1094-45f5-b4a7-d6f27bfd0f50)

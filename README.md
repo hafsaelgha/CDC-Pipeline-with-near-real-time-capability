@@ -1,7 +1,7 @@
 # CDC-Pipeline-with-near-real-time-capability
 **Implement upstream data changes with near real time capability using CDC on AWS.**
 
-# 1-Introduction
+<span style="color:red"> # 1-Introduction </span>
 **Change Data Capture (CDC)** is a technique used in databases and data integration systems to **identify and track** changes made to data. It's especially valuable in scenarios where you need to **replicate** data from one source to another or monitor **real-time** changes in a database.
 **But WHY CDC Pipeline is Important?**
 

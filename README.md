@@ -111,12 +111,13 @@ the load is complete in almost 4min !
 
  # 11-Creating Transformation Job on AWS Glue from the Visual ETL 
  As I mentioned below, our dataset contain some sensitive data. In order to keep this data private during the CDC we gonna run a job before the data arrives on S3 bucket.
- **Don't forget to create IAM role to read from kinesis data stream and write to S3 for the AWS Glue Service ! **
+ 
+ **Don't forget to create IAM role to read from kinesis data stream and write to S3 for the AWS Glue Service !**
  
  - [ ] Source : Kinesis Data Stream 
  - [ ] Transform : 
    Flatten : to deal with our JSON format, we gonna turn it into a flat, tabular format to facilitate the storage after.
-   Detect Sensitive Data : Detect PII, It will detect the phone number and email adress then replace it with ##### string.
+   Detect Sensitive Data : Detect PII, It will detect the phone number and email adress then replace it with "#####" string.
 - [ ] Target : Amazon S3
 ![glue job from visual etl](https://github.com/hafsaelgha/CDC-Pipeline-with-near-real-time-capability/assets/99973359/f53f8665-6942-4610-87c2-1a19c3dc1a4f)
 

@@ -38,8 +38,9 @@ In this project, I used a simple dataset that contain Informations about users s
 - [ ] mysql-connector-python + mysql client core 8.0 : to establish connexion between our Database and EC2 instance.
 - [ ] amazon-kinesis-client : amazon_kclpy in order to execute our reading from kinesis on EC2 instance.
 - [ ] Files loaded on EC2 instance : load file to ec2: users.csv, commands.sql, read_kinesis_first_10_records.py, aurora_update_single_row.py, aurora_update_multiple_row.py, read_kinesis_update.py
-![EC2 required installation](https://github.com/hafsaelgha/CDC-Pipeline-with-near-real-time-capability/assets/99973359/65a1e805-af28-44c3-99bd-7e986c5fc49e)
-![EC2 required installation 2 ](https://github.com/hafsaelgha/CDC-Pipeline-with-near-real-time-capability/assets/99973359/0203a3b8-1094-45f5-b4a7-d6f27bfd0f50)
+![EC2 required installation](https://github.com/hafsaelgha/CDC-Pipeline-with-near-real-time-capability/assets/99973359/ecf769d8-5bc3-4b4b-b786-1c446b3f826f)
+![EC2 required installation 2 ](https://github.com/hafsaelgha/CDC-Pipeline-with-near-real-time-capability/assets/99973359/639e2a48-6521-4cbe-a765-ba69ee3292cd)
+
 
 # 5-Create Amamzon Aurora MySQL compatible database from RDS
 
@@ -50,9 +51,11 @@ binlog_format :  Row
 binlog_checksum :  None
 binlog_cache_size : 32768
 
-![binlog](https://github.com/hafsaelgha/CDC-Pipeline-with-near-real-time-capability/assets/99973359/ac9cc517-152e-43ac-b57d-5261a68a5660)
+![binlog](https://github.com/hafsaelgha/CDC-Pipeline-with-near-real-time-capability/assets/99973359/2edd9cd1-0d41-47c0-b329-5cbef703aec8)
 
-![Parameter group of RDS](https://github.com/hafsaelgha/CDC-Pipeline-with-near-real-time-capability/assets/99973359/c332b97d-7311-43f8-b082-e6b8eaa79e05)
+![Parameter group of RDS](https://github.com/hafsaelgha/CDC-Pipeline-with-near-real-time-capability/assets/99973359/683725bd-7ffb-4915-99db-2d0c2ec34668)
+
+
 
 ## Creating the Aurora MySQL database 
 While creating ur database, make sure you are : 
@@ -63,7 +66,8 @@ While creating ur database, make sure you are :
 - [ ] Port 3306
 - [ ] Selecting the DB cluster group we created before
 
-![Aurora MySQL database](https://github.com/hafsaelgha/CDC-Pipeline-with-near-real-time-capability/assets/99973359/d4715e9d-2378-4905-a3dd-f0f186f95ff3)
+![Aurora MySQL database](https://github.com/hafsaelgha/CDC-Pipeline-with-near-real-time-capability/assets/99973359/b7ea52c6-37e5-4486-98c5-474ef54764be)
+
 
 # 6-Creating Users table 
 Create table users with this command: 
@@ -71,44 +75,54 @@ mysql -h "endpoint" -u admin -p product_platform < commands.sql
 then connect to your database and show tables;
 
 # 7-Create a Datastream using Amazon Kinesis 
-![Kinesis Datastream ](https://github.com/hafsaelgha/CDC-Pipeline-with-near-real-time-capability/assets/99973359/e8f1e64d-7a26-416d-b3d8-278f40a42b91)
+![Kinesis Datastream ](https://github.com/hafsaelgha/CDC-Pipeline-with-near-real-time-capability/assets/99973359/60bf0750-472b-4b37-bc0a-1991bf4b947e)
+
+
 
 # 8-Create IAM role that will be used by AWS DMS to interact with Kinesis
 First we should create  a **new policy** for the Kinesis Service with : 
 Action: Read: DescribeStream 
 	      Write: PutRecords PutRecord
 Resources: specify a stream resource ARN
-![policy actions for IAM Role for DMS](https://github.com/hafsaelgha/CDC-Pipeline-with-near-real-time-capability/assets/99973359/079bc08f-9ecf-4cc5-8209-54455f1e8622)
+![policy actions for IAM Role for DMS](https://github.com/hafsaelgha/CDC-Pipeline-with-near-real-time-capability/assets/99973359/6ff398d2-6d8f-42a3-9d89-29ca082b5bf7)
+
 
 **then attach your policy to your IAM Role**
-![DMS Role](https://github.com/hafsaelgha/CDC-Pipeline-with-near-real-time-capability/assets/99973359/a65518e4-590b-433d-9de6-918349b650d0)
+![DMS Role](https://github.com/hafsaelgha/CDC-Pipeline-with-near-real-time-capability/assets/99973359/291493a6-2d28-4252-b508-b4e152481bc7)
+
 
 # 9-Amazon DMS
 
 In this service we will perform 3 steps : 
 ## Create a replication instance which will be used to run our migration tasks 
 make sure to select the VPC our instance will run on, and let the other configuration as default.
-![replication instance](https://github.com/hafsaelgha/CDC-Pipeline-with-near-real-time-capability/assets/99973359/96b37cd8-8c04-4bce-b2d3-73ff6a6a36b7)
+![replication instance](https://github.com/hafsaelgha/CDC-Pipeline-with-near-real-time-capability/assets/99973359/9727de72-6469-46fd-b7fe-04e55f938357)
+
 
 ## Create the endpoints that will allow AWS DMS to read from and write to our database 
 ### First: source endpoint (AuroraMySQL Writer)
 ### Second: target endpoint (Amazon Kinesis)
-![endpoints for DMS ](https://github.com/hafsaelgha/CDC-Pipeline-with-near-real-time-capability/assets/99973359/8b4f2621-e592-423a-989a-00a0ea86dbc5)
+![endpoints for DMS ](https://github.com/hafsaelgha/CDC-Pipeline-with-near-real-time-capability/assets/99973359/a38f00ca-ab35-456e-b330-732251d38f62)
+
 
 ## Create Database migration tasks
 While creating the DMS task, we gonna specify the schema : 
-![DMS migration task config](https://github.com/hafsaelgha/CDC-Pipeline-with-near-real-time-capability/assets/99973359/1c65e5a4-3970-4975-8c4b-c4703bafbc36)
+![DMS migration task config](https://github.com/hafsaelgha/CDC-Pipeline-with-near-real-time-capability/assets/99973359/51c9c8e6-a86a-48e0-b173-5ae6ec632e60)
+
 Exceute the task : 
-![DMS task execution](https://github.com/hafsaelgha/CDC-Pipeline-with-near-real-time-capability/assets/99973359/8d35eb44-7c02-418c-9be7-c142442cae15)
+![DMS task execution](https://github.com/hafsaelgha/CDC-Pipeline-with-near-real-time-capability/assets/99973359/55107704-e471-4937-804d-f66caa5b6dab)
+
 the load is complete in almost 4min !
 
 # 10-Read from Kinesis Data Stream 
  Execute this file to read the first 10 records from kinesis : read_kinesis_first_10_records.py .
  Then update our database by changing the userid : execute this file aurora_update_single_row.py 
  Next, we can perform a continuous update on multiple rows and see the changes made to our database : execute this file on a new EC2 session read_kinesis_update.py, use one session for updating changes and other one for seeing those changes.
-![read first 10 records](https://github.com/hafsaelgha/CDC-Pipeline-with-near-real-time-capability/assets/99973359/b96b28bb-57df-40aa-a119-afbc42f0d33b)
-![update a single row](https://github.com/hafsaelgha/CDC-Pipeline-with-near-real-time-capability/assets/99973359/d473e045-1357-4761-8560-8aca930059cf)
-![read updates](https://github.com/hafsaelgha/CDC-Pipeline-with-near-real-time-capability/assets/99973359/0505acea-61e4-486f-9ff8-a59ebd5adc0e)
+
+![read first 10 records](https://github.com/hafsaelgha/CDC-Pipeline-with-near-real-time-capability/assets/99973359/456aa9e5-c0f5-4892-8d20-b024b0700bf5)
+![update a single row](https://github.com/hafsaelgha/CDC-Pipeline-with-near-real-time-capability/assets/99973359/9b01d8a6-49a0-4677-a064-ec1d84ef5975)
+![read updates](https://github.com/hafsaelgha/CDC-Pipeline-with-near-real-time-capability/assets/99973359/47862084-86e6-4b9d-af04-7763925d22e5)
+
 
  # 11-Creating Transformation Job on AWS Glue from the Visual ETL 
  As I mentioned below, our dataset contain some sensitive data. In order to keep this data private during the CDC we gonna run a job before the data arrives on S3 bucket.
@@ -120,17 +134,19 @@ the load is complete in almost 4min !
    Flatten : to deal with our JSON format, we gonna turn it into a flat, tabular format to facilitate the storage after.
    Detect Sensitive Data : Detect PII, It will detect the phone number and email adress then replace it with "#####" string.
 - [ ] Target : Amazon S3
-![glue job from visual etl](https://github.com/hafsaelgha/CDC-Pipeline-with-near-real-time-capability/assets/99973359/f53f8665-6942-4610-87c2-1a19c3dc1a4f)
+![glue job from visual etl](https://github.com/hafsaelgha/CDC-Pipeline-with-near-real-time-capability/assets/99973359/6ed5d5c8-f761-4fc9-97c7-9c45b4de4ec7)
+
 
 We can have access to the script generated by AWS Glue to exectue this ETL :
-![transform script generated](https://github.com/hafsaelgha/CDC-Pipeline-with-near-real-time-capability/assets/99973359/1a9b3815-9698-4010-8033-42d4c1aa8737)
+![transform script generated](https://github.com/hafsaelgha/CDC-Pipeline-with-near-real-time-capability/assets/99973359/528a4653-48e5-46bd-9f05-46d78043633a)
+
 
 **Run your job and let's meet on Athena ! **
 
 # 12-Amazon Athena 
 Simple Query to see our first 10 rows : 
 SELECT * FROM "AwsDataCatalog"."default"."users" limit 10;
-![transformed data at athena](https://github.com/hafsaelgha/CDC-Pipeline-with-near-real-time-capability/assets/99973359/7ff2e880-6d61-4446-802f-0adff52e3a86)
+![transformed data at athena](https://github.com/hafsaelgha/CDC-Pipeline-with-near-real-time-capability/assets/99973359/decf72c2-8b86-4b73-a5d4-6a684a0ceae6)
 
 
 
